@@ -10,12 +10,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
-/**
- * Created by tasty on 2017/3/27 0027.
- */
 @Configuration
 @EnableTransactionManagement
-@MapperScan(basePackages = "com.ljx.mapper")
+@MapperScan(basePackages = "com.fun.mapper")
 public class MybatisConfig {
 
     /**

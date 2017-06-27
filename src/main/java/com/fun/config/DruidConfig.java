@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by tasty on 2017/3/27 0027.
  * Druid 数据库连接池配置
  */
 @Configuration
