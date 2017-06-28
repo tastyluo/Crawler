@@ -42,6 +42,18 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- WebMagic -->
+        <dependency>
+            <groupId>us.codecraft</groupId>
+            <artifactId>webmagic-core</artifactId>
+            <version>0.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>us.codecraft</groupId>
+            <artifactId>webmagic-extension</artifactId>
+            <version>0.7.2</version>
+        </dependency>
+
         <!-- mybatis -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
@@ -72,7 +84,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>6.0.6</version>
+            <!--<scope>runtime</scope>-->
         </dependency>
 
         <!-- 热部署工具 -->
@@ -125,7 +137,7 @@
                     <dependency>
                         <groupId>mysql</groupId>
                         <artifactId>mysql-connector-java</artifactId>
-                        <version>6.0.6</version>
+                        <version>${mysql.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>tk.mybatis</groupId>
