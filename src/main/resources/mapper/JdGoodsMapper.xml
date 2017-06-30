@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fun.mapper.JdGoodsMapper">
+  <resultMap id="BaseResultMap" type="com.fun.entity.JdGoods">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="SHOP_NAME" jdbcType="VARCHAR" property="shopName" />
+    <result column="COMMENTS_NUM" jdbcType="INTEGER" property="commentsNum" />
+    <result column="PRICE" jdbcType="DECIMAL" property="price" />
+    <result column="SELF_OPERATED" jdbcType="VARCHAR" property="selfOperated" />
+    <result column="LINK" jdbcType="VARCHAR" property="link" />
+    <result column="GOOD_RATE" jdbcType="DECIMAL" property="goodRate" />
+    <result column="CATEGORY" jdbcType="VARCHAR" property="category" />
+  </resultMap>
+</mapper>
