@@ -2,6 +2,7 @@ package com.fun.pipeline;
 
 import com.fun.entity.JdGoods;
 import com.fun.mapper.JdGoodsMapper;
+import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Task;
 import us.codecraft.webmagic.pipeline.PageModelPipeline;
 
@@ -13,6 +14,7 @@ import javax.annotation.Resource;
  * 创建时间：2017-06-30 10:46
  * 持久化商品信息
  */
+@Component("JDGoodsMapperPipeline")
 public class JDGoodsMapperPipeline implements PageModelPipeline<JdGoods> {
 
     @Resource

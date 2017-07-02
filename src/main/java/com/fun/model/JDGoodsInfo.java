@@ -2,6 +2,7 @@ package com.fun.model;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fun.util.StringCompareFormatter;
 import lombok.Data;
 import org.springframework.web.client.RestTemplate;
 import us.codecraft.webmagic.Page;
@@ -10,11 +11,10 @@ import us.codecraft.webmagic.model.AfterExtractor;
 import us.codecraft.webmagic.model.ConsolePageModelPipeline;
 import us.codecraft.webmagic.model.OOSpider;
 import us.codecraft.webmagic.model.annotation.ExtractBy;
+import us.codecraft.webmagic.model.annotation.Formatter;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 版本： 1.0
@@ -24,7 +24,7 @@ import java.util.Map;
  */
 @Data
 @ExtractBy(value = "//li[@class=gl-item]", multi = true)
-public class JDGoods extends RestTemplate implements AfterExtractor {
+public class JDGoodsInfo extends RestTemplate implements AfterExtractor {
 
     // 编号
     @ExtractBy("//div[@class=j-sku-item]/@data-sku")
@@ -48,6 +48,8 @@ public class JDGoods extends RestTemplate implements AfterExtractor {
     private BigDecimal price;
 
     // 是否自营
+    @Formatter(value = "自营", formatter = StringCompareFormatter.class)
+    @ExtractBy("//div[@class=j-sku-item]/i[@id=js-jdzy]/text()")
     private String selfOperated;
 
     // 商品链接
@@ -60,43 +62,43 @@ public class JDGoods extends RestTemplate implements AfterExtractor {
 
     @Override
     public void afterProcess(Page page) {
-        setPriceByJson();
-        setCommentsByJson();
+        setPriceAfterPage();
+        setCommentsAfterPage();
         // 发现url
         List<String> urls = page.getHtml()
                 .css("span.p-num")
                 .links()
-                .regex(".*/list.html\\?cat=.*&page=[1-9]\\d*.*").all();
+                .regex(".*/list.html\\?cat=670,677,678&page=[1-9]\\d*.*").all();
         page.addTargetRequests(urls);
-
     }
 
-    public void setPriceByJson() {
-        Map<String, String> params = new HashMap<>();
-        params.put("Content-Type", "application/json;charset=utf-8");
-        JSONArray jsonResult = super.getForObject(PRICE_REQUEST_URL + id + "&origin=2", JSONArray.class, params);
+    /**
+     * 从请求json中获取 商品价格
+     */
+    public void setPriceAfterPage() {
+        String url = PRICE_REQUEST_URL + id + "&origin=2";
+        JSONArray jsonResult = super.getForObject(url, JSONArray.class);
         if (jsonResult != null && jsonResult.size() > 0) {
             this.price = new BigDecimal(jsonResult.getJSONObject(0).get("op").toString());
-            System.out.println("价格: " + this.price);
         }
     }
 
-    public void setCommentsByJson() {
-        Map<String, String> params = new HashMap<>();
-        params.put("Content-Type", "application/json;charset=utf-8");
-        JSONObject jsonResult = super.getForObject(COMMENTS_REQUEST_URL + id, JSONObject.class, params);
-        if (jsonResult != null) {
-            JSONArray jsonArray = jsonResult.getJSONArray("CommentsCount");
-            this.commentsNum = Integer.parseInt(jsonArray.getJSONObject(0).get("CommentCount").toString());
-            this.goodRate = new BigDecimal(jsonArray.getJSONObject(0).get("GoodRate").toString());
-            System.out.println("评论数: " + this.price);
-            System.out.println("好评率: " + this.price);
+    /**
+     * 从请求json中获取 评论数 和 好评率
+     */
+    public void setCommentsAfterPage() {
+        String url = COMMENTS_REQUEST_URL + id;
+        String jsonResult = super.getForObject(url, String.class);
+        JSONObject jsonObject = JSONObject.parseObject(jsonResult);
+        if (jsonObject != null) {
+            JSONObject commentObj = jsonObject.getJSONArray("CommentsCount").getJSONObject(0);
+            this.commentsNum = Integer.parseInt(commentObj.get("CommentCount").toString());
+            BigDecimal oneHundred = new BigDecimal("100");
+            this.goodRate = new BigDecimal(commentObj.get("GoodRate").toString()).multiply(oneHundred);
         }
     }
 
     public static void main (String[] args) {
-        OOSpider.create(Site.me().setSleepTime(1000).setRetryTimes(3)
-                , new ConsolePageModelPipeline(), JDGoods.class)
-                .addUrl("https://list.jd.com/list.html?cat=670,677,678&page=0").thread(5).run();
+
     }
 }
