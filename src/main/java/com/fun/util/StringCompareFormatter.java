@@ -13,6 +13,7 @@ public class StringCompareFormatter implements ObjectFormatter<String> {
 
     @Override
     public String format(String text) throws Exception {
+        text = text == null ? "" : text.trim();
         return compare.equals(text) ? "1" : "0";
     }
 

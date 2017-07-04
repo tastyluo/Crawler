@@ -14,6 +14,7 @@ import us.codecraft.webmagic.model.annotation.ExtractBy;
 import us.codecraft.webmagic.model.annotation.Formatter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -68,8 +69,15 @@ public class JDGoodsInfo extends RestTemplate implements AfterExtractor {
         List<String> urls = page.getHtml()
                 .css("span.p-num")
                 .links()
-                .regex(".*/list.html\\?cat=670,677,678&page=[1-9]\\d*.*").all();
-        page.addTargetRequests(urls);
+                .regex("/list.html\\?cat=670,677,678&page=[1-9]\\d*.*")
+                .replace("/list.html", "https://list.jd.com/list.html").all();
+        List<String> filterUrls = new ArrayList<>();
+        for (String url : urls) {
+            if (url.contains("670,677,678")) {
+                filterUrls.add(url);
+            }
+        }
+        page.addTargetRequests(filterUrls);
     }
 
     /**
@@ -98,7 +106,9 @@ public class JDGoodsInfo extends RestTemplate implements AfterExtractor {
         }
     }
 
-    public static void main (String[] args) {
-
+    public static void main(String args[]) {
+        OOSpider.create(Site.me().setSleepTime(1000).setRetryTimes(3)
+                , new ConsolePageModelPipeline(), JDGoodsInfo.class)
+                .addUrl("https://list.jd.com/list.html?cat=670,677,678&page=0").thread(5).run();
     }
 }

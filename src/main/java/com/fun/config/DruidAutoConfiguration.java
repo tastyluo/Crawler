@@ -29,9 +29,9 @@ import java.util.Map;
 @EnableConfigurationProperties(DruidProperties.class)
 @ConditionalOnClass(DruidDataSource.class)
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
-public class DruidConfig {
+public class DruidAutoConfiguration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DruidConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DruidAutoConfiguration.class);
 
     @Value("${druid.monitor.username}")
     private String druidMonitorUsername;
@@ -46,13 +46,12 @@ public class DruidConfig {
     @Primary
     public DataSource dataSource() {
         DruidDataSource datasource = new DruidDataSource();
-
         datasource.setUrl(druidProperties.getUrl());
         datasource.setUsername(druidProperties.getUsername());
         datasource.setPassword(druidProperties.getPassword());
         datasource.setDriverClassName(druidProperties.getDriverClassName());
 
-        //configuration
+        // configuration
         datasource.setInitialSize(druidProperties.getInitialSize());
         datasource.setMinIdle(druidProperties.getMinIdle());
         datasource.setMaxActive(druidProperties.getMaxActive());
@@ -63,8 +62,6 @@ public class DruidConfig {
         datasource.setTestWhileIdle(druidProperties.isTestWhileIdle());
         datasource.setTestOnBorrow(druidProperties.isTestOnBorrow());
         datasource.setTestOnReturn(druidProperties.isTestOnReturn());
-        datasource.setPoolPreparedStatements(druidProperties.isPoolPreparedStatements());
-        datasource.setMaxPoolPreparedStatementPerConnectionSize(druidProperties.getMaxPoolPreparedStatementPerConnectionSize());
         try {
             datasource.setFilters(druidProperties.getFilters());
         } catch (SQLException e) {
@@ -102,5 +99,4 @@ public class DruidConfig {
         filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*");
         return filterRegistrationBean;
     }
-
 }

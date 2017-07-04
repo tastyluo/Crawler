@@ -1,15 +1,14 @@
 package com.fun;
 
-import com.fun.listener.CrawlerStartup;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+@EnableScheduling
 public class CrawlerApplication {
 
     public static void main(String[] args) {
-        SpringApplication springApplication = new SpringApplication(CrawlerApplication.class);
-        springApplication.addListeners(new CrawlerStartup());
-        springApplication.run(args);
+        SpringApplication.run(CrawlerApplication.class, args);
     }
 }

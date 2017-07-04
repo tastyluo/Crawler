@@ -1,7 +1,10 @@
 package com.fun.entity;
 
-import java.math.BigDecimal;
+import com.fun.util.StringCompareFormatter;
+import us.codecraft.webmagic.model.annotation.Formatter;
+
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Table(name = "JD_GOODS")
 public class JdGoods {
@@ -40,6 +43,7 @@ public class JdGoods {
     /**
      * 是否自营
      */
+    @Formatter(value = "自营", formatter = StringCompareFormatter.class)
     @Column(name = "SELF_OPERATED")
     private String selfOperated;
 
@@ -166,7 +170,9 @@ public class JdGoods {
      * @param selfOperated 是否自营
      */
     public void setSelfOperated(String selfOperated) {
-        this.selfOperated = selfOperated;
+        String compare = "自营";
+        selfOperated = selfOperated != null ? selfOperated.trim() : "";
+        this.selfOperated = compare.equals(selfOperated) ? "1" : "0";
     }
 
     /**

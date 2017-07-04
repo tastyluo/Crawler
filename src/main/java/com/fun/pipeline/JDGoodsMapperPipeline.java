@@ -2,11 +2,11 @@ package com.fun.pipeline;
 
 import com.fun.entity.JdGoods;
 import com.fun.mapper.JdGoodsMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Task;
-import us.codecraft.webmagic.pipeline.PageModelPipeline;
-
-import javax.annotation.Resource;
+import us.codecraft.webmagic.pipeline.Pipeline;
 
 /**
  * 版本： 1.0
@@ -15,13 +15,23 @@ import javax.annotation.Resource;
  * 持久化商品信息
  */
 @Component("JDGoodsMapperPipeline")
-public class JDGoodsMapperPipeline implements PageModelPipeline<JdGoods> {
+public class JDGoodsMapperPipeline implements Pipeline {
 
-    @Resource
+    @Autowired
     private JdGoodsMapper jdGoodsMapper;
 
     @Override
-    public void process(JdGoods jdGoods, Task task) {
-        jdGoodsMapper.insert(jdGoods);
+    public void process(ResultItems resultItems, Task task) {
+        JdGoods jdGoods = resultItems.get("jdGoods");
+        if (jdGoods != null) {
+            JdGoods temp = new JdGoods();
+            temp.setId(jdGoods.getId());
+            JdGoods existGoods = jdGoodsMapper.selectOne(temp);
+            if (existGoods != null) {
+                jdGoodsMapper.updateByPrimaryKey(jdGoods);
+            } else {
+                jdGoodsMapper.insert(jdGoods);
+            }
+        }
     }
 }

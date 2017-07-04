@@ -1,12 +1,11 @@
 package com.fun.job;
 
-import com.fun.model.JDGoodsInfo;
+import com.fun.pipeline.JDGoodsMapperPipeline;
+import com.fun.processor.JDGoodsProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import us.codecraft.webmagic.Site;
-import us.codecraft.webmagic.model.OOSpider;
-import us.codecraft.webmagic.pipeline.PageModelPipeline;
+import us.codecraft.webmagic.Spider;
 
 /**
  * 版本： 1.0
@@ -16,14 +15,16 @@ import us.codecraft.webmagic.pipeline.PageModelPipeline;
 @Component
 public class JobCrawler {
 
-    @Qualifier("JDGoodsMapperPipeline")
     @Autowired
-    private PageModelPipeline jdgoodsMapperPipeline;
+    private JDGoodsMapperPipeline jdGoodsMapperPipeline;
 
+    @Scheduled(cron = "0 0 0/1 * * ?") //每小时执行一次
     public void crawl() {
-        OOSpider.create(Site.me().setSleepTime(1000).setRetryTimes(3)
-                , jdgoodsMapperPipeline, JDGoodsInfo.class)
-                .addUrl("https://list.jd.com/list.html?cat=670,677,678&page=0").thread(5).run();
+        Spider.create(new JDGoodsProcessor())
+                .addPipeline(jdGoodsMapperPipeline)
+                .addUrl("https://list.jd.com/list.html?cat=670,677,678&page=0")
+                .thread(5)
+                .run();
     }
 
 }

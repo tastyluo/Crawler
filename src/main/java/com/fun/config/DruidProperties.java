@@ -20,11 +20,9 @@ public class DruidProperties {
     private int maxWait;
     private int timeBetweenEvictionRunsMillis;
     private int minEvictableIdleTimeMillis;
-    private int maxPoolPreparedStatementPerConnectionSize;
     private String filters;
     private String validationQuery;
     private boolean testWhileIdle;
     private boolean testOnBorrow;
     private boolean testOnReturn;
-    private boolean poolPreparedStatements;
 }
