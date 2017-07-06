@@ -1,8 +1,5 @@
 package com.fun.entity;
 
-import com.fun.util.StringCompareFormatter;
-import us.codecraft.webmagic.model.annotation.Formatter;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 
@@ -12,9 +9,8 @@ public class JdGoods {
      * 商品编号
      */
     @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    @Column(name = "GOODS_ID")
+    private String goodsId;
 
     /**
      * 商品名称
@@ -43,7 +39,6 @@ public class JdGoods {
     /**
      * 是否自营
      */
-    @Formatter(value = "自营", formatter = StringCompareFormatter.class)
     @Column(name = "SELF_OPERATED")
     private String selfOperated;
 
@@ -68,19 +63,19 @@ public class JdGoods {
     /**
      * 获取商品编号
      *
-     * @return ID - 商品编号
+     * @return GOODS_ID - 商品编号
      */
-    public String getId() {
-        return id;
+    public String getGoodsId() {
+        return goodsId;
     }
 
     /**
      * 设置商品编号
      *
-     * @param id 商品编号
+     * @param goodsId 商品编号
      */
-    public void setId(String id) {
-        this.id = id;
+    public void setGoodsId(String goodsId) {
+        this.goodsId = goodsId;
     }
 
     /**

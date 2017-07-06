@@ -5,7 +5,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <id column="GOODS_ID" jdbcType="VARCHAR" property="goodsId" />
     <result column="NAME" jdbcType="VARCHAR" property="name" />
     <result column="SHOP_NAME" jdbcType="VARCHAR" property="shopName" />
     <result column="COMMENTS_NUM" jdbcType="INTEGER" property="commentsNum" />

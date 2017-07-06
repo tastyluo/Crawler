@@ -1,8 +1,9 @@
-package com.fun.processor;
+package com.fun.webmagic.processor;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fun.entity.JdGoods;
+import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
@@ -13,6 +14,7 @@ import us.codecraft.xsoup.Xsoup;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 版本： 1.0
@@ -22,6 +24,8 @@ import java.util.List;
 public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(JDGoodsProcessor.class);
+
+    private final static Map<String, JdGoods> goodsMap = new HashedMap();
 
     // 抓取网站的相关配置，包括编码、抓取间隔、重试次数等
     private Site site = Site.me().setRetryTimes(3).setSleepTime(1000);
@@ -69,11 +73,11 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
             int commentsNum = (Integer) comment.get("commentsNum");
             BigDecimal goodRate = (BigDecimal) comment.get("goodRate");
 
-            logger.info("[id: {}, name: {}, shopName: {}, price: {}, link: {}, commentsNum: {}, goodRate: {}]",
-                    id, name, shopName, price, link, commentsNum, goodRate);
+            logger.info("[id: {}, name: {}, shopName: {}, price: {}, link: {}, commentsNum: {}, goodRate: {}, selfOperated: {}]",
+                    id, name, shopName, price, link, commentsNum, goodRate, selfOperated);
 
             JdGoods jdGoods = new JdGoods();
-            jdGoods.setId(id);
+            jdGoods.setGoodsId(id);
             jdGoods.setName(name);
             jdGoods.setShopName(shopName);
             jdGoods.setPrice(price);
@@ -82,6 +86,7 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
             jdGoods.setGoodRate(goodRate);
             jdGoods.setSelfOperated(selfOperated);
             jdGoods.setCategory("cpu");
+            goodsMap.put(id, jdGoods);
             page.putField("jdGoods", jdGoods);
         } else {    // 商品列表页
             // 发现url
