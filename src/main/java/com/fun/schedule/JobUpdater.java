@@ -6,6 +6,8 @@ import com.fun.mapper.JdGoodsMapper;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -21,6 +23,8 @@ import java.util.Map;
  */
 @Service
 public class JobUpdater implements Job {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JobUpdater.class);
 
     @Autowired
     JdGoodsMapper jdGoodsMapper;
@@ -58,7 +62,7 @@ public class JobUpdater implements Job {
                     insertList.add(item);
                 }
             }
-            jdGoodsMapper.insertList(insertList);
+            jdGoodsMapper.batchInsert(insertList);
         }
     }
 }

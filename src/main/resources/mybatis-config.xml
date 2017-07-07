@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <settings>
+        <!-- 指定logback为日志输出 -->
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+</configuration>

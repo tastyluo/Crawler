@@ -13,7 +13,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @MapperScan(basePackages = "com.fun.mapper")
-public class MybatisConfiguration {
+public class MybatisConfig {
 
     /**
      * 配置事务管理器

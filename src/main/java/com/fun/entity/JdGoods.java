@@ -1,6 +1,8 @@
 package com.fun.entity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 
 @Table(name = "JD_GOODS")
@@ -165,9 +167,7 @@ public class JdGoods {
      * @param selfOperated 是否自营
      */
     public void setSelfOperated(String selfOperated) {
-        String compare = "自营";
-        selfOperated = selfOperated != null ? selfOperated.trim() : "";
-        this.selfOperated = compare.equals(selfOperated) ? "1" : "0";
+        this.selfOperated = selfOperated;
     }
 
     /**

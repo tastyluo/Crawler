@@ -37,7 +37,7 @@ public class CrawlerCache implements CacheTemplate<JdGoods> {
 
     @Override
     public void put(JdGoods jdGoods) {
-        if (jdGoods != null) {
+        if (jdGoods != null && jdGoods.getGoodsId() != null) {
             cache.put(jdGoods.getGoodsId(), jdGoods);
         }
     }

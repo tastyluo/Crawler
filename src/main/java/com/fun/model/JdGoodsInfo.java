@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Data
 public class JdGoodsInfo {
 
-    private String id;
+    private String goodsId;
 
     /**
      * 商品名称

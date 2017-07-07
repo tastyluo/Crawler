@@ -5,6 +5,8 @@ import com.fun.webmagic.processor.JDGoodsProcessor;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import us.codecraft.webmagic.Spider;
@@ -17,6 +19,8 @@ import us.codecraft.webmagic.Spider;
 @Service
 public class JobCrawler implements Job {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JobCrawler.class);
+
     @Autowired
     JDGoodsMapperPipeline jdGoodsMapperPipeline;
 
@@ -26,6 +30,7 @@ public class JobCrawler implements Job {
     }
 
     public void crawl() {
+        LOGGER.info("[******* 京东爬虫启动 *******]");
         Spider.create(new JDGoodsProcessor())
                 .addPipeline(jdGoodsMapperPipeline)
                 .addUrl("https://list.jd.com/list.html?cat=670,677,678&page=0")

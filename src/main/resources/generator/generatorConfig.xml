@@ -27,9 +27,9 @@
         <javaClientGenerator targetPackage="com.fun.mapper" targetProject="src/main/java"
                              type="XMLMAPPER"/>
 
-        <table tableName="JD_GOODS">
+        <table tableName="%">
             <!--mysql 配置-->
-            <generatedKey column="GOODS_ID" sqlStatement="Mysql" identity="true"/>
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
     </context>
 </generatorConfiguration>

@@ -45,6 +45,8 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
     // 商品详细页url正则
     private final static String GOODS_DETAIL_URL_REGEX = "https://item\\.jd\\.com/[1-9]\\d*\\.html.*";
 
+    private final static String SELF_OPERATED_TEXT = "自营";
+
     @Override
     public void process(Page page) {
         // 商品url
@@ -68,6 +70,7 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
             String link = page.getUrl().toString();
             String selfOperated = Xsoup.select(pageHTML,
                     "//div[@class=crumb-wrap]//div[@class=J-hove-wrap]//div[@class=name]/[@class=u-jd]/text()").get();
+            selfOperated = parseSelfOperated(selfOperated);
             BigDecimal price = getPrice(id);
             JSONObject comment = getComments(id);
             int commentsNum = (Integer) comment.get("commentsNum");
@@ -97,6 +100,16 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
                     .replace("/list.html", "https://list.jd.com/list.html").all();
             page.addTargetRequests(pageUrls);
         }
+    }
+
+    /**
+     * 转换自营
+     * @param text
+     * @return
+     */
+    public String parseSelfOperated(String text) {
+        text = text != null ? text.trim() : "";
+        return SELF_OPERATED_TEXT.equals(text) ? "1" : "0";
     }
 
     /**

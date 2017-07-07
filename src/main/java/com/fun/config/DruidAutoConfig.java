@@ -29,9 +29,9 @@ import java.util.Map;
 @EnableConfigurationProperties(DruidProperties.class)
 @ConditionalOnClass(DruidDataSource.class)
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
-public class DruidAutoConfiguration {
+public class DruidAutoConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DruidAutoConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DruidAutoConfig.class);
 
     @Value("${druid.monitor.username}")
     private String druidMonitorUsername;
