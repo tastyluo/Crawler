@@ -3,7 +3,6 @@ package com.fun.webmagic.processor;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fun.entity.JdGoods;
-import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
@@ -13,8 +12,8 @@ import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.xsoup.Xsoup;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 版本： 1.0
@@ -24,8 +23,6 @@ import java.util.Map;
 public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(JDGoodsProcessor.class);
-
-    private final static Map<String, JdGoods> goodsMap = new HashedMap();
 
     // 抓取网站的相关配置，包括编码、抓取间隔、重试次数等
     private Site site = Site.me().setRetryTimes(3).setSleepTime(1000);
@@ -49,18 +46,8 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
 
     @Override
     public void process(Page page) {
-        // 商品url
-        List<String> itemUrls = page.getHtml()
-                .css("li.gl-item div.j-sku-item div.p-img")
-                .links()
-                .regex("//item\\.jd\\.com/[1-9]\\d*\\.html")
-                .replace("//item.jd.com", "https://item.jd.com")
-                .all();
-
-        page.addTargetRequests(itemUrls);
-
+        String pageHTML = page.getHtml().toString();
         if (page.getUrl().regex(GOODS_DETAIL_URL_REGEX).match()) {  // 商品详情页
-            String pageHTML = page.getHtml().toString();
             String id = page.getUrl().toString()
                     .replaceAll("https://item\\.jd\\.com/", "")
                     .replaceAll("\\.html.*", "");
@@ -89,9 +76,22 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
             jdGoods.setGoodRate(goodRate);
             jdGoods.setSelfOperated(selfOperated);
             jdGoods.setCategory("cpu");
-            goodsMap.put(id, jdGoods);
             page.putField("jdGoods", jdGoods);
         } else {    // 商品列表页
+            String pageNum = Xsoup.select(pageHTML, "//span[@class=p-num]/a[class=curr]/text()").get();
+
+            // 商品url
+            List<String> itemUrls = page.getHtml()
+                    .css("li.gl-item div.j-sku-item div.p-img")
+                    .links()
+                    .regex("//item\\.jd\\.com/[1-9]\\d*\\.html")
+                    .replace("//item.jd.com", "https://item.jd.com")
+                    .all();
+            List<String> parseItemUrls = new ArrayList<>();
+            for (int i = 0; i < itemUrls.size(); i++) {
+                parseItemUrls.add(itemUrls.get(i) + "?page=" + pageNum + "&order=" + i);
+            }
+            page.addTargetRequests(parseItemUrls);
             // 发现url
             List<String> pageUrls = page.getHtml()
                     .css("span.p-num")
@@ -101,6 +101,7 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
             page.addTargetRequests(pageUrls);
         }
     }
+
 
     /**
      * 转换自营
