@@ -14,12 +14,13 @@
     <result column="LINK" jdbcType="VARCHAR" property="link" />
     <result column="GOOD_RATE" jdbcType="DECIMAL" property="goodRate" />
     <result column="CATEGORY" jdbcType="VARCHAR" property="category" />
+    <result column="SALE_ORDER" jdbcType="INTEGER" property="saleOrder" />
   </resultMap>
 
     <insert id="batchInsert">
         INSERT INTO JD_GOODS
         VALUES
-        <foreach collection="goodsList" item="item" index="index" separator=",">
+        <foreach collection="goodsList" index="index" item="item" separator=",">
             (#{item.goodsId, jdbcType=VARCHAR},
             #{item.name, jdbcType=VARCHAR},
             #{item.shopName, jdbcType=VARCHAR},
@@ -28,7 +29,8 @@
             #{item.selfOperated, jdbcType=VARCHAR},
             #{item.link, jdbcType=VARCHAR},
             #{item.goodRate, jdbcType=DECIMAL},
-            #{item.category, jdbcType=VARCHAR})
+            #{item.category, jdbcType=VARCHAR},
+            #{item.saleOrder, jdbcType=INTEGER})
         </foreach>
     </insert>
 

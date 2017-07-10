@@ -63,6 +63,12 @@ public class JdGoods {
     private String category;
 
     /**
+     * 销量排序
+     */
+    @Column(name = "SALE_ORDER")
+    private Integer saleOrder;
+
+    /**
      * 获取商品编号
      *
      * @return GOODS_ID - 商品编号
@@ -222,5 +228,23 @@ public class JdGoods {
      */
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    /**
+     * 获取销量排序
+     *
+     * @return SALE_ORDER - 销量排序
+     */
+    public Integer getSaleOrder() {
+        return saleOrder;
+    }
+
+    /**
+     * 设置销量排序
+     *
+     * @param saleOrder 销量排序
+     */
+    public void setSaleOrder(Integer saleOrder) {
+        this.saleOrder = saleOrder;
     }
 }

@@ -13,7 +13,9 @@ import us.codecraft.xsoup.Xsoup;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 版本： 1.0
@@ -28,26 +30,32 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
     private Site site = Site.me().setRetryTimes(3).setSleepTime(1000);
 
     // 商品列表URL前缀
-    private final static String URL_PREFIX = "https://list.jd.com/list.html?cat=";
+    private static final String URL_PREFIX = "https://list.jd.com/list.html?cat=";
 
     // CPU分类编号
-    private final static String CPU_CAT_ID = "670,677,678";
+    private static final String CPU_CAT_ID = "670,677,678";
 
     // 价格请求地址
-    private final static String PRICE_REQUEST_URL = "http://pm.3.cn/prices/pcpmgets?skuids=";
+    private static final String PRICE_REQUEST_URL = "http://pm.3.cn/prices/pcpmgets?skuids=";
 
     // 评论请求地址
-    private final static String COMMENTS_REQUEST_URL = "http://club.jd.com/clubservice.aspx?method=GetCommentsCount&referenceIds=";
+    private static final String COMMENTS_REQUEST_URL = "http://club.jd.com/clubservice.aspx?method=GetCommentsCount&referenceIds=";
 
     // 商品详细页url正则
-    private final static String GOODS_DETAIL_URL_REGEX = "https://item\\.jd\\.com/[1-9]\\d*\\.html.*";
+    private static final String GOODS_DETAIL_URL_REGEX = "https://item\\.jd\\.com/[1-9]\\d*\\.html.*";
 
-    private final static String SELF_OPERATED_TEXT = "自营";
+    private static final String SELF_OPERATED_TEXT = "自营";
+
+    private static final Integer PAGE_SIZE = 60;
 
     @Override
     public void process(Page page) {
         String pageHTML = page.getHtml().toString();
         if (page.getUrl().regex(GOODS_DETAIL_URL_REGEX).match()) {  // 商品详情页
+            Map<String, String> paramsMap = getParams(page.getUrl().toString());
+            int pageNum = Integer.parseInt(paramsMap.get("page"));
+            int pageOrder = Integer.parseInt(paramsMap.get("order"));
+            int saleOrder = pageNum * PAGE_SIZE + pageOrder;
             String id = page.getUrl().toString()
                     .replaceAll("https://item\\.jd\\.com/", "")
                     .replaceAll("\\.html.*", "");
@@ -76,10 +84,10 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
             jdGoods.setGoodRate(goodRate);
             jdGoods.setSelfOperated(selfOperated);
             jdGoods.setCategory("cpu");
+            jdGoods.setSaleOrder(saleOrder);
             page.putField("jdGoods", jdGoods);
         } else {    // 商品列表页
-            String pageNum = Xsoup.select(pageHTML, "//span[@class=p-num]/a[class=curr]/text()").get();
-
+            String pageNum = Xsoup.select(pageHTML, "//span[@class=p-num]/a[@class=curr]/text()").get();
             // 商品url
             List<String> itemUrls = page.getHtml()
                     .css("li.gl-item div.j-sku-item div.p-img")
@@ -87,10 +95,13 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
                     .regex("//item\\.jd\\.com/[1-9]\\d*\\.html")
                     .replace("//item.jd.com", "https://item.jd.com")
                     .all();
+
+            // 给商品url添加排序信息 （按照销量排序）
             List<String> parseItemUrls = new ArrayList<>();
             for (int i = 0; i < itemUrls.size(); i++) {
-                parseItemUrls.add(itemUrls.get(i) + "?page=" + pageNum + "&order=" + i);
+                parseItemUrls.add(itemUrls.get(i) + "?page=" + pageNum + "&order=" + (i + 1));
             }
+
             page.addTargetRequests(parseItemUrls);
             // 发现url
             List<String> pageUrls = page.getHtml()
@@ -102,6 +113,23 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
         }
     }
 
+    /**
+     * 提取url的参数
+     * @param url
+     * @return
+     */
+    public Map<String, String> getParams(String url) {
+        String[] strArr = url.split("[?]");
+        Map<String, String> params = new HashMap<>();
+        if (strArr.length > 1) {
+            String[] items = strArr[1].split("&");
+            for (int i = 0; i < items.length; i++) {
+                String[] tempParam = items[i].split("=");
+                params.put(tempParam[0], tempParam[1]);
+            }
+        }
+        return params;
+    }
 
     /**
      * 转换自营

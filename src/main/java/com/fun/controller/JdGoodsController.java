@@ -1,13 +1,11 @@
 package com.fun.controller;
 
-import com.fun.model.JdGoodsInfo;
 import com.fun.service.JdGoodsService;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * 版本： 1.0
@@ -21,9 +19,9 @@ public class JdGoodsController {
     @Autowired
     private JdGoodsService jdGoodsService;
 
-    @RequestMapping("/page")
-    public List<JdGoodsInfo> listOfPage(@RequestParam(value = "pageNum", required = false, defaultValue = "0") int pageNum,
-                                        @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) {
+    @RequestMapping(value = "/page", produces = "application/json;charset=UTF-8")
+    public PageInfo listOfPage(@RequestParam(value = "pageNum", required = false, defaultValue = "0") int pageNum,
+                               @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) {
         return jdGoodsService.listOfPage(pageNum, pageSize);
     }
 
