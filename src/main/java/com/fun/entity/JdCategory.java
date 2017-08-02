@@ -2,7 +2,7 @@ package com.fun.entity;
 
 import javax.persistence.*;
 
-@Table(name = "JD_CATEGORY")
+@Table(name = "jd_category")
 public class JdCategory {
     /**
      * 分类编号

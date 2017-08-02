@@ -1,11 +1,9 @@
 package com.fun.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.math.BigDecimal;
+import javax.persistence.*;
 
-@Table(name = "JD_GOODS")
+@Table(name = "jd_goods")
 public class JdGoods {
     /**
      * 商品编号

@@ -23,7 +23,7 @@ public class JdGoodsService {
 
     public PageInfo listOfPage(int pageNum, int pageSize) {
         Example example = new Example(JdGoods.class);
-        example.setOrderByClause("COMMENTS_NUM DESC");
+        example.setOrderByClause("SALE_ORDER ASC");
         Page<JdGoodsInfo> goodsPage = PageHelper.startPage(pageNum, pageSize)
                 .doSelectPage(()-> jdGoodsMapper.selectByExample(example));
         PageInfo page = new PageInfo(goodsPage);

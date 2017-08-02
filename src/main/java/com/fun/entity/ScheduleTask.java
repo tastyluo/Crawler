@@ -2,7 +2,7 @@ package com.fun.entity;
 
 import javax.persistence.*;
 
-@Table(name = "SCHEDULE_TASK")
+@Table(name = "schedule_task")
 public class ScheduleTask {
     /**
      * 编号

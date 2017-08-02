@@ -55,7 +55,7 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
             Map<String, String> paramsMap = getParams(page.getUrl().toString());
             int pageNum = Integer.parseInt(paramsMap.get("page"));
             int pageOrder = Integer.parseInt(paramsMap.get("order"));
-            int saleOrder = pageNum * PAGE_SIZE + pageOrder;
+            int saleOrder = (pageNum - 1) * PAGE_SIZE + pageOrder;
             String id = page.getUrl().toString()
                     .replaceAll("https://item\\.jd\\.com/", "")
                     .replaceAll("\\.html.*", "");
