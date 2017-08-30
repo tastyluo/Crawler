@@ -27,7 +27,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
     private JsonWenTokenUtil jsonWenTokenUtil;
 
     @Value("${jwt.header}")
-    private String tokenHeader;
+    private String header;
 
     @Value("${jwt.tokenHead}")
     private String tokenHead;
@@ -37,7 +37,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain chain) throws ServletException, IOException {
-        String authHeader = request.getHeader(this.tokenHeader);
+        String authHeader = request.getHeader(this.header);
         if (authHeader != null && authHeader.startsWith(tokenHead)) {
             final String authToken = authHeader.substring(tokenHead.length()); // The part after "Bearer "
             String username = jsonWenTokenUtil.getUsernameFromToken(authToken);
@@ -54,9 +54,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
                 if (jsonWenTokenUtil.validateToken(authToken, userDetails)) {
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
-                    authentication
-                            .setDetails(new WebAuthenticationDetailsSource()
-                                    .buildDetails(request));
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     logger.info("authenticated user [" + username + "], setting security context");
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }

@@ -1,16 +1,19 @@
 package com.fun.secruity;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
+@Data
 public class JwtAuthResponse implements Serializable {
 
-    private final String token;
+    private String token;
 
-    public JwtAuthResponse(String token) {
-        this.token = token;
-    }
+    private Integer status;
 
-    public String getToken() {
-        return this.token;
+    private String username;
+
+    public JwtAuthResponse() {
+        this.token = "";
     }
 }

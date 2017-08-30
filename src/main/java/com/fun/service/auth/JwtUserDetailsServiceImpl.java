@@ -2,6 +2,7 @@ package com.fun.service.auth;
 
 import com.fun.entity.SysUser;
 import com.fun.mapper.SysUserMapper;
+import com.fun.secruity.JwtUser;
 import com.fun.secruity.JwtUserFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +17,7 @@ public class JwtUserDetailsServiceImpl implements UserDetailsService {
     private SysUserMapper userMapper;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public JwtUser loadUserByUsername(String username) throws UsernameNotFoundException {
         SysUser queryUser = new SysUser();
         queryUser.setUserName(username);
         SysUser user = userMapper.selectOne(queryUser);

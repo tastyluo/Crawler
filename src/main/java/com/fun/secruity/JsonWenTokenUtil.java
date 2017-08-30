@@ -1,10 +1,12 @@
 package com.fun.secruity;
 
+import com.fun.model.AuthTokenDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,7 @@ public class JsonWenTokenUtil implements Serializable {
 
     private static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
     private static final String CLAIM_KEY_USERNAME = "username";
+    private static final String CLAIM_KEY_ROLE_NAME = "rolename";
     private static final String CLAIM_KEY_CREATED = "created";
 
     @Value("${jwt.secret}")
@@ -30,7 +33,7 @@ public class JsonWenTokenUtil implements Serializable {
         String username;
         try {
             final Claims claims = getClaimsFromToken(token);
-            username = claims.getSubject();
+            username = (String) claims.get(CLAIM_KEY_USERNAME);
         } catch (Exception e) {
             username = null;
         }
@@ -59,6 +62,18 @@ public class JsonWenTokenUtil implements Serializable {
         return expiration;
     }
 
+    public AuthTokenDetails getDetailsFromToken(String token) {
+        AuthTokenDetails authTokenDetails = null;
+        Claims claims = getClaimsFromToken(token);
+        if (claims != null) {
+            authTokenDetails = new AuthTokenDetails();
+            authTokenDetails.setUsername((String) claims.get(CLAIM_KEY_USERNAME));
+            authTokenDetails.setRoleName((String) claims.get(CLAIM_KEY_ROLE_NAME));
+            authTokenDetails.setExpirationDate(claims.getExpiration());
+        }
+        return authTokenDetails;
+    }
+
     /**
      * 从token获取信息
      * @param token
@@ -77,6 +92,10 @@ public class JsonWenTokenUtil implements Serializable {
         return claims;
     }
 
+    /**
+     * 过期时间
+     * @return
+     */
     private Date generateExpirationDate() {
         return new Date(System.currentTimeMillis() + expiration * 1000);
     }
@@ -84,20 +103,25 @@ public class JsonWenTokenUtil implements Serializable {
     /**
      * token 是否过期
      * @param token token
-     * @return true \ false
+     * @return [true | false]
      */
     private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
+        boolean isTokenExpired = expiration.before(new Date());
+        if (isTokenExpired) {
+            throw new AccountExpiredException("Token is out of date");
+        }
+        return isTokenExpired;
     }
 
     private Boolean isCreatedBeforeLastPasswordReset(Date created, Date lastPasswordReset) {
         return (lastPasswordReset != null && created.before(lastPasswordReset));
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(JwtUser jwtUser) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put(CLAIM_KEY_USERNAME, userDetails.getUsername());
+        claims.put(CLAIM_KEY_USERNAME, jwtUser.getUsername());
+        claims.put(CLAIM_KEY_ROLE_NAME, jwtUser.getAuthorities().toArray());
         claims.put(CLAIM_KEY_CREATED, new Date());
         return createJsonWebToken(claims);
     }
@@ -142,7 +166,7 @@ public class JsonWenTokenUtil implements Serializable {
      * 验证 token
      * @param token
      * @param userDetails
-     * @return true \ false
+     * @return [true | false]
      */
     public Boolean validateToken(String token, UserDetails userDetails) {
         JwtUser user = (JwtUser) userDetails;
