@@ -37,32 +37,15 @@ public class JobUpdater implements Job {
         Map<String, JdGoods> cache = crawlerCache.getAll();
         if (cache.size() > 0) {
             List<String> idList = new ArrayList<>();
+            List<JdGoods> jdGoodsList = new ArrayList<>();
             for ( Map.Entry<String, JdGoods> entry : cache.entrySet()) {
                 idList.add(entry.getKey());
+                jdGoodsList.add(entry.getValue());
             }
-
             Example example = new Example(JdGoods.class);
             example.createCriteria().andIn("goodsId", idList);
-            List<JdGoods> existGoods = jdGoodsMapper.selectByExample(example);
-
-            List<JdGoods> insertList = new ArrayList<>();
-            for ( Map.Entry<String, JdGoods> entry : cache.entrySet()) {
-                boolean exist = false;
-                String key = entry.getKey();
-                JdGoods item = entry.getValue();
-                for (int i = 0; i < existGoods.size(); i++) {
-                    JdGoods jdGoods = existGoods.get(i);
-                    if (jdGoods.getGoodsId().equals(key)) {
-                        exist = true;
-                    }
-                }
-                if (exist) {
-                    jdGoodsMapper.updateByPrimaryKey(item);
-                } else {
-                    insertList.add(item);
-                }
-            }
-            jdGoodsMapper.batchInsert(insertList);
+            int deleteCount = jdGoodsMapper.deleteByExample(example);
+            jdGoodsMapper.batchInsert(jdGoodsList);
         }
     }
 }

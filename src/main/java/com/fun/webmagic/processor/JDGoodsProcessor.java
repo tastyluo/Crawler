@@ -3,14 +3,19 @@ package com.fun.webmagic.processor;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fun.entity.JdGoods;
+import com.fun.util.ImageDownloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.xsoup.Xsoup;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +53,8 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
 
     private static final Integer PAGE_SIZE = 60;
 
+    private static final String IMG_SAVE_PATH = "E:/WebImgs/products/";
+
     @Override
     public void process(Page page) {
         String pageHTML = page.getHtml().toString();
@@ -65,6 +72,14 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
             String link = page.getUrl().toString();
             String selfOperated = Xsoup.select(pageHTML,
                     "//div[@class=crumb-wrap]//div[@class=J-hove-wrap]//div[@class=name]/[@class=u-jd]/text()").get();
+            String imgUrl = Xsoup.select(pageHTML,
+                    "//div[@class=w]//div[@class=preview]//img[@id=spec-img]/@data-origin").get();
+            try {
+                imgUrl = "http:" + imgUrl;
+                ImageDownloader.download(imgUrl, id , IMG_SAVE_PATH);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             selfOperated = parseSelfOperated(selfOperated);
             BigDecimal price = getPrice(id);
             JSONObject comment = getComments(id);
@@ -90,7 +105,7 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
             String pageNum = Xsoup.select(pageHTML, "//span[@class=p-num]/a[@class=curr]/text()").get();
             // 商品url
             List<String> itemUrls = page.getHtml()
-                    .css("li.gl-item div.j-sku-item div.p-img")
+                    .xpath("//li[@class=gl-item]//div[@class=j-sku-item][1]//div[@class=p-img]")
                     .links()
                     .regex("//item\\.jd\\.com/[1-9]\\d*\\.html")
                     .replace("//item.jd.com", "https://item.jd.com")
@@ -151,7 +166,7 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
         String url = PRICE_REQUEST_URL + goodsId + "&origin=2";
         JSONArray jsonResult = super.getForObject(url, JSONArray.class);
         if (jsonResult != null && jsonResult.size() > 0) {
-            price = new BigDecimal(jsonResult.getJSONObject(0).get("op").toString());
+            price = new BigDecimal(jsonResult.getJSONObject(0).get("p").toString());
         }
         return price;
     }
@@ -163,17 +178,27 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
      */
     public JSONObject getComments(String goodsId) {
         JSONObject comment = new JSONObject();
+        comment.put("commentsNum", 0);
+        comment.put("goodRate", null);
         String url = COMMENTS_REQUEST_URL + goodsId;
-        String jsonResult = super.getForObject(url, String.class);
-        JSONObject jsonObject = JSONObject.parseObject(jsonResult);
-        if (jsonObject != null) {
-            JSONObject commentObj = jsonObject.getJSONArray("CommentsCount").getJSONObject(0);
-            comment.put("commentsNum", Integer.parseInt(commentObj.get("CommentCount").toString()));
-            BigDecimal oneHundred = new BigDecimal("100");
-            comment.put("goodRate", new BigDecimal(commentObj.get("GoodRate").toString())
-                    .multiply(oneHundred)
-                    .setScale(2, BigDecimal.ROUND_HALF_UP));
+        try {
+            String jsonResult = super.getForObject(url, String.class);
+            JSONObject jsonObject = JSONObject.parseObject(jsonResult);
+            if (jsonObject != null) {
+                JSONObject commentObj = jsonObject.getJSONArray("CommentsCount").getJSONObject(0);
+                comment.put("commentsNum", Integer.parseInt(commentObj.get("CommentCount").toString()));
+                BigDecimal oneHundred = new BigDecimal("100");
+                comment.put("goodRate", new BigDecimal(commentObj.get("GoodRate").toString())
+                        .multiply(oneHundred)
+                        .setScale(2, BigDecimal.ROUND_HALF_UP));
+            }
+        } catch (RestClientException e) {
+            StringWriter sw = new StringWriter();
+            sw.write("comments api request error");
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
         }
+
         return comment;
     }
 
