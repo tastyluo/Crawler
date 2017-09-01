@@ -35,13 +35,19 @@
             <MaxFileSize>10MB</MaxFileSize>
         </triggeringPolicy>
     </appender>
-    <logger name="org.apache.ibatis" level="DEBUG">
-        <appender-ref ref="STDOUT"/>
-    </logger>
+    <!--<logger name="org.apache.ibatis" level="DEBUG">-->
+        <!--<appender-ref ref="STDOUT"/>-->
+    <!--</logger>-->
 
-    <logger name="java.sql" level="debug">
-        <appender-ref ref="STDOUT"/>
-    </logger>
+    <!--<logger name="java.sql" level="debug">-->
+        <!--<appender-ref ref="STDOUT"/>-->
+    <!--</logger>-->
+    <!--<logger name="com.fun" level="DEBUG">-->
+        <!--<appender-ref ref="baselog"/>-->
+    <!--</logger>-->
+    <!--<logger name="com.fun.mapper" level="DEBUG">-->
+        <!--<appender-ref ref="STDOUT" />-->
+    <!--</logger>-->
 
     <!-- 日志输出级别 -->
     <root level="INFO">

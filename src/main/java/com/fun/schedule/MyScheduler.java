@@ -39,10 +39,10 @@ public class MyScheduler {
 
     public void init() throws SchedulerException {
         scheduler = schedulerFactoryBean.getScheduler();
-        List<ScheduleTask> tasks = scheduleTaskMapper.selectAll();
-        for (ScheduleTask task : tasks) {
-            startJob(task);
-        }
+//        List<ScheduleTask> tasks = scheduleTaskMapper.selectAll();
+//        for (ScheduleTask task : tasks) {
+//            startJob(task);
+//        }
         scheduler.start();
     }
 

@@ -79,9 +79,9 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public JwtAuthResponse signUp(SysUser registerUser) {
-        final String username = registerUser.getUserName();
+        final String username = registerUser.getUsername();
         SysUser addUser = new SysUser();
-        addUser.setUserName(username);
+        addUser.setUsername(username);
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
         if (userMapper.selectOne(addUser) != null) {
             jwtAuthResponse.setStatus(EXIST_SAME_USERNAME);

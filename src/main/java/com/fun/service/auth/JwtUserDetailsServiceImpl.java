@@ -19,7 +19,7 @@ public class JwtUserDetailsServiceImpl implements UserDetailsService {
     @Override
     public JwtUser loadUserByUsername(String username) throws UsernameNotFoundException {
         SysUser queryUser = new SysUser();
-        queryUser.setUserName(username);
+        queryUser.setUsername(username);
         SysUser user = userMapper.selectOne(queryUser);
 
         if (user == null) {

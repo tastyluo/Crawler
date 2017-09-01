@@ -23,11 +23,19 @@ public class JsonWenTokenUtil implements Serializable {
     private static final String CLAIM_KEY_ROLE_NAME = "rolename";
     private static final String CLAIM_KEY_CREATED = "created";
 
+    @Value("${jwt.tokenHead}")
+    private String tokenHead;
+
     @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.expiration}")
     private Long expiration;
+
+    public String getTokenFromRequestHeader(String header) {
+        final String token = header.substring(tokenHead.length());
+        return token;
+    }
 
     public String getUsernameFromToken(String token) {
         String username;
