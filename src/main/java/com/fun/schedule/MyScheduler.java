@@ -31,7 +31,7 @@ public class MyScheduler {
     private final static Map<String, Class> taskClazzMap = new HashMap<String, Class>() {
         {
             put("1", JobCrawler.class);
-            put("2", JobUpdater.class);
+            put("2", DataUpdater.class);
         }
     };
 
@@ -39,10 +39,10 @@ public class MyScheduler {
 
     public void init() throws SchedulerException {
         scheduler = schedulerFactoryBean.getScheduler();
-//        List<ScheduleTask> tasks = scheduleTaskMapper.selectAll();
-//        for (ScheduleTask task : tasks) {
-//            startJob(task);
-//        }
+        List<ScheduleTask> tasks = scheduleTaskMapper.selectAll();
+        for (ScheduleTask task : tasks) {
+            startJob(task);
+        }
         scheduler.start();
     }
 

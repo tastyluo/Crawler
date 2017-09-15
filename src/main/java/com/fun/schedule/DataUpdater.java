@@ -22,9 +22,9 @@ import java.util.Map;
  * 创建时间：2017-07-06 11:12
  */
 @Service
-public class JobUpdater implements Job {
+public class DataUpdater implements Job {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JobUpdater.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataUpdater.class);
 
     @Autowired
     JdGoodsMapper jdGoodsMapper;

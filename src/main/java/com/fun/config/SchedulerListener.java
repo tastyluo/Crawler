@@ -1,4 +1,4 @@
-package com.fun.listener;
+package com.fun.config;
 
 import com.fun.schedule.MyScheduler;
 import org.quartz.SchedulerException;

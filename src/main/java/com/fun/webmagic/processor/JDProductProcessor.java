@@ -27,9 +27,9 @@ import java.util.Map;
  * 创建人： 罗佳星
  * 创建时间：2017-06-28 11:39
  */
-public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
+public class JDProductProcessor extends RestTemplate implements PageProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(JDGoodsProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(JDProductProcessor.class);
 
     // 抓取网站的相关配置，包括编码、抓取间隔、重试次数等
     private Site site = Site.me().setRetryTimes(3).setSleepTime(1000);
@@ -53,7 +53,11 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
 
     private static final Integer PAGE_SIZE = 60;
 
-    private static final String IMG_SAVE_PATH = "E:/WebImgs/products/";
+    private String imgSavePath;
+
+    public JDProductProcessor(String imgPath) {
+        this.imgSavePath = imgPath;
+    }
 
     @Override
     public void process(Page page) {
@@ -76,7 +80,7 @@ public class JDGoodsProcessor extends RestTemplate implements PageProcessor {
                     "//div[@class=w]//div[@class=preview]//img[@id=spec-img]/@data-origin").get();
             try {
                 imgUrl = "http:" + imgUrl;
-                ImageDownloader.download(imgUrl, id , IMG_SAVE_PATH);
+                ImageDownloader.download(imgUrl, id , imgSavePath);
             } catch (IOException e) {
                 e.printStackTrace();
             }

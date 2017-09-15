@@ -9,9 +9,8 @@
     </springProfile>
     <!-- 生成环境变量product-->
     <springProfile name="prod">
-        <property name="LOG_HOME" value="/opt/springboottest/logs"/>
+        <property name="LOG_HOME" value="/root/apache-tomcat-8.5.20/logs"/>
     </springProfile>
-
 
     <!-- 控制台输出 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -23,7 +22,7 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--日志文件输出的文件地址和名称-->
-            <FileNamePattern>${LOG_HOME}/SpringBootDemo_log_%d{yyyy-MM-dd}.log</FileNamePattern>
+            <FileNamePattern>${LOG_HOME}/Crawler_log_%d{yyyy-MM-dd}.log</FileNamePattern>
             <!--日志文件保留天数-->
             <MaxHistory>30</MaxHistory>
         </rollingPolicy>
@@ -35,24 +34,11 @@
             <MaxFileSize>10MB</MaxFileSize>
         </triggeringPolicy>
     </appender>
-    <!--<logger name="org.apache.ibatis" level="DEBUG">-->
-        <!--<appender-ref ref="STDOUT"/>-->
-    <!--</logger>-->
-
-    <!--<logger name="java.sql" level="debug">-->
-        <!--<appender-ref ref="STDOUT"/>-->
-    <!--</logger>-->
-    <!--<logger name="com.fun" level="DEBUG">-->
-        <!--<appender-ref ref="baselog"/>-->
-    <!--</logger>-->
-    <!--<logger name="com.fun.mapper" level="DEBUG">-->
-        <!--<appender-ref ref="STDOUT" />-->
-    <!--</logger>-->
 
     <!-- 日志输出级别 -->
     <root level="INFO">
         <!-- 日志输出地点,输出一个就行 -->
-        <!--<appender-ref ref="STDOUT"/>-->
+        <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>
 </configuration>
